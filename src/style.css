@@ -7,7 +7,6 @@
     display: flex;
     flex-direction: column;
     width: var(--search-bar-width);
-    gap: 26px;
 }
 
 .content {
@@ -27,14 +26,37 @@
     width: var(--list-width);
     display: flex;
     flex-direction: row;
+    border: 1px solid #EAEAEA;
+    border-radius: 10px;
+    margin-bottom: 15px;
 }
 .hotel-card__booking-block {
     margin-left: var(--component-gap);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.hotel-card__title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.hotel-card__subtitle {
+    font-size: 14px;
+    color: #868686;
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
 }
 
 .hotel-card__description {
     font-size: 16px;
 }
+.hotel-card__bullet {
+    padding: 0 4px;
+}
+
 .booking-button {
     width: 179px;
 }

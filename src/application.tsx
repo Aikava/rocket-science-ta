@@ -1,8 +1,9 @@
-import React, {ChangeEvent, FormEvent, useCallback, useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import "./style.css";
 import {Filters, Hotel} from "./types";
 import {SearchForm} from "./hotel-search-block";
-import {Pagination} from "antd";
+import {Button, Pagination, Rate, Typography} from "antd";
+import {EnvironmentOutlined} from "@ant-design/icons";
 
 const HotelItem = (props: Hotel) => {
     const {
@@ -15,11 +16,24 @@ const HotelItem = (props: Hotel) => {
         description,
         currency
     } = props;
+    const reviewsTitle = reviews_amount === 1
+        ? "отзыв"
+        : reviews_amount > 1 && reviews_amount < 6 ?
+            "отзыва" : "отзывов"
     return (<section className="hotel-card">
         <article className="hotel-card__info-block">
             <p className="hotel-card__title">{name}</p>
             <p className="hotel-card__subtitle">
-                {rating} {type} {reviews_amount} {country}
+                <Rate style={{fontSize: "14px"}} disabled value={rating}/>
+                <span>
+                    {type}
+                    <span className="hotel-card__bullet">&#x2022;</span>
+                    {reviews_amount} {reviewsTitle}
+                </span>
+                <span>
+                <EnvironmentOutlined/>
+                    {country}
+                </span>
             </p>
             <p className="hotel-card__description">
                 {description}
@@ -28,7 +42,7 @@ const HotelItem = (props: Hotel) => {
         <article className="hotel-card__booking-block">
             <b className="hotel-card__title">{min_price} {currency}</b>
             <p className="hotel-card__subtitle">цена за 1 ночь</p>
-            <button className="booking-button">Забронировать</button>
+            <Button className="booking-button">Забронировать</Button>
         </article>
     </section>);
 };
@@ -42,19 +56,20 @@ const HotelList = ({hotels}: HotelProps) => {
         setPage(page);
     }
     return (<section className="list">
-        {hotels.slice(page, page + maxSize).map((hotel: Hotel) => <HotelItem key={hotel.name.replace(" ", "-")} {...hotel} />)}
+        {hotels.slice(page, page + maxSize).map((hotel: Hotel) => <HotelItem
+            key={hotel.name.replace(" ", "-")} {...hotel} />)}
         <Pagination onChange={handlePageChange} current={page} total={hotels.length} pageSize={maxSize}/>
     </section>);
 };
 
-const HotelsNotFound = ({ onReset }) => {
+const HotelsNotFound = ({onReset}) => {
     return (<article className="empty-list">
-        <b>По данным параметрам ничего не найдено</b>
-        <p>
+        <Typography.Title level={4}>По данным параметрам ничего не найдено</Typography.Title>
+        <Typography.Paragraph type="secondary">
             Попробуйте изменить параметры фильтрации
             или вернуться в общий каталог
-        </p>
-        <button onClick={onReset}>Очистить фильтр</button>
+        </Typography.Paragraph>
+        <Button onClick={onReset}>Очистить фильтр</Button>
     </article>);
 }
 
@@ -122,9 +137,9 @@ export const Application = () => {
                 onReset={handleResetFilters}
                 availableCountries={availableCountries}
             />
-            { hotels.length > 0
-                ? <HotelList hotels={hotels} />
-                : <HotelsNotFound onReset={handleResetFilters} /> }
+            {hotels.length > 0
+                ? <HotelList hotels={hotels}/>
+                : <HotelsNotFound onReset={handleResetFilters}/>}
         </section>
     );
 };

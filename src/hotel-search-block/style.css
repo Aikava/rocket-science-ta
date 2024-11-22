@@ -1,3 +1,8 @@
+fieldset {
+    border: 1px solid #EAEAEA;
+    border-radius: 10px;
+}
+
 .star-count,
 .hotel-type {
     display: flex;
@@ -20,6 +25,7 @@
     flex-direction: column;
 }
 .country-list {
+    margin-top: 16px;
     max-height: 200px;
     display: flex;
     flex-direction: column;
@@ -27,6 +33,8 @@
 }
 
 .button-block {
+    margin-top: 26px;
     display: flex;
+    gap: 15px;
     flex-direction: column;
 }

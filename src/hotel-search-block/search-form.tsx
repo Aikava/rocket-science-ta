@@ -1,16 +1,15 @@
 import React, {
     ChangeEvent,
-    Fragment,
     Ref,
     useEffect,
-    useMemo, useRef,
+    useMemo,
     useState
 } from "react";
 import {Filters} from "../types";
 
 import "./style.css";
-import {Button, Checkbox, Flex, Input, Slider} from "antd";
-import {CloseOutlined, SearchOutlined} from "@ant-design/icons";
+import {Button, Checkbox, Flex, Input, Slider, Typography} from "antd";
+import {CloseOutlined, LineOutlined, MinusOutlined, SearchOutlined} from "@ant-design/icons";
 
 const CountryInputField = ({availableCountries, value}) => {
     const [search, setSearch] = useState("");
@@ -36,9 +35,9 @@ const CountryInputField = ({availableCountries, value}) => {
 
     return (
         <section>
-            <label htmlFor="country">
-                <b>Страна</b>
-            </label>
+            <Typography.Title level={5}>
+                Страна
+            </Typography.Title>
             <Input
                 prefix={<SearchOutlined/>}
                 suffix={<CloseOutlined onClick={handleClearSearch}/>}
@@ -56,6 +55,7 @@ const CountryInputField = ({availableCountries, value}) => {
                         const isChecked = value.includes(country);
 
                         return (<Checkbox
+                            key={country}
                             data-field-name="country"
                             data-value={country}
                             checked={isChecked}
@@ -75,7 +75,9 @@ type HotelTypeProps = {
 const HotelTypeField = ({value = []}: HotelTypeProps) => {
     return (
         <section>
-            <b>Тип</b>
+            <Typography.Title level={5}>
+                Тип
+            </Typography.Title>
             <fieldset className="hotel-type">
                 <Checkbox
                     data-field-name="type"
@@ -131,9 +133,9 @@ const StarCountField = ({value = []}: StarCountFieldProps) => {
 
     return (
         <section className="star-count">
-            <b>
-                <b>Колличество звезд</b>
-            </b>
+            <Typography.Title level={5}>
+                Колличество звезд
+            </Typography.Title>
             <fieldset className="star-count__counts">
                 {starCountList}
             </fieldset>
@@ -147,9 +149,9 @@ type ReviewCountFieldProps = {
 const ReviewCountField = ({value}: ReviewCountFieldProps) => {
     return (
         <section>
-            <label htmlFor="reviews">
-                <b>Количество отзывов (от)</b>
-            </label>
+            <Typography.Title level={5} >
+                Количество отзывов (от)
+            </Typography.Title>
             <Input
                 placeholder="Например от 10"
                 value={value < 0 ? "" : value}
@@ -189,7 +191,9 @@ const PriceField = ({onChange, from = 0, to = 100500, currency}: PriceFieldProps
         setToValue(to);
     }, [from, to]);
     return (<section>
-        <b>Цена</b>
+        <Typography.Title level={5}>
+            Цена
+        </Typography.Title>
         <fieldset>
             <article className="price-from-to">
                 <p className="price-from-to__from">
@@ -201,7 +205,7 @@ const PriceField = ({onChange, from = 0, to = 100500, currency}: PriceFieldProps
                         data-value-type="number"
                         value={fromValue}/>
                 </p>
-                <p>-</p>
+                <MinusOutlined />
                 <p className="price-from-to__to">
                     <Input
                         onChange={handleToPriceChange}
