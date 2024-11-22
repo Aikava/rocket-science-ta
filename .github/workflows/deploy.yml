@@ -1,4 +1,4 @@
-name: Deploy project
+name: Deploy
 
 on:
   push:
@@ -21,7 +21,9 @@ jobs:
         uses: bahmutov/npm-install@v1
 
       - name: Build project
-        run: npm run build
+        run: |
+          npm run build
+          cp src/hotels.json public
 
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v3
