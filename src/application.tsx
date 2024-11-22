@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FormEvent, useCallback, useEffect, useState} from "react";
+import React, {ChangeEvent, FormEvent, useCallback, useEffect, useRef, useState} from "react";
 import "./style.css";
 import {Filters, Hotel} from "./types";
 import {SearchForm} from "./hotel-search-block";
@@ -14,22 +14,22 @@ const HotelItem = (props: Hotel) => {
         description,
         currency
     } = props;
-    return (<article className="hotel-card">
-        <p className="hotel-card__info-block">
-            <div className="hotel-card__title">{name}</div>
-            <div className="hotel-card__subtitle">
+    return (<section className="hotel-card">
+        <article className="hotel-card__info-block">
+            <p className="hotel-card__title">{name}</p>
+            <p className="hotel-card__subtitle">
                 {rating} {type} {reviews_amount} {country}
-            </div>
-            <div className="hotel-card__description">
+            </p>
+            <p className="hotel-card__description">
                 {description}
-            </div>
-        </p>
-        <p className="hotel-card__booking-block">
-            <div className="hotel-card__title">{min_price} {currency}</div>
-            <div className="hotel-card__subtitle">цена за 1 ночь</div>
+            </p>
+        </article>
+        <article className="hotel-card__booking-block">
+            <b className="hotel-card__title">{min_price} {currency}</b>
+            <p className="hotel-card__subtitle">цена за 1 ночь</p>
             <button className="booking-button">Забронировать</button>
-        </p>
-    </article>);
+        </article>
+    </section>);
 };
 type HotelProps = {
     hotels: Array<Hotel>;
@@ -41,7 +41,7 @@ const HotelList = ({hotels}: HotelProps) => {
 };
 
 const HotelsNotFound = ({ onReset }) => {
-    return (<article>
+    return (<article className="empty-list">
         <b>По данным параметрам ничего не найдено</b>
         <p>
             Попробуйте изменить параметры фильтрации
@@ -67,21 +67,42 @@ const applyFiltersToList = (filters: Partial<Filters>, list: Array<Hotel>) => {
         if (filters.type.length > 0)
             isValid &&= filters.type.includes(hotel.type);
 
+        if (filters.starCount.length > 0)
+            isValid &&= filters.starCount.includes(hotel.stars);
+
+        if (filters.priceFrom)
+            isValid &&= filters.priceFrom <= hotel.min_price;
+
+        if (filters.priceTo)
+            isValid &&= filters.priceTo >= hotel.min_price;
+
         return isValid;
     })
 }
-const localStorageNS = `${window.location.href}--search-form`;
+const initialFilters: Filters = {
+    type: [],
+    country: [],
+    priceFrom: 0,
+    priceTo: 100500,
+    starCount: [],
+    reviewCount: -1
+}
+
 export const Application = () => {
-    const [hotels, setHotels] = useState([]);
-    const [filters, setFilters] = useState({});
-    const handleSearch = useCallback((data: Partial<Filters>) => {
-        void loadHotelData().then(list => {
-            setHotels(applyFiltersToList(data, list));
-        });
+    const [hotels, setHotels] = useState<Array<Hotel>>([]);
+    const formRef = useRef();
+    const handleSearch = useCallback((filters: Filters) => {
+        void loadHotelData()
+            .then(list => {
+                setHotels(applyFiltersToList(filters, list));
+            });
     }, []);
     const [availableCountries, setAvailableCountries] = useState([]);
     const handleResetFilters = () => {
-        void loadHotelData().then(hotels => setHotels(hotels));
+        formRef.current.reset();
+        void loadHotelData().then(result => {
+            setHotels(result);
+        });
     };
     useEffect(() => {
         void loadHotelData().then(result => {
@@ -92,21 +113,10 @@ export const Application = () => {
         });
     }, []);
 
-    useEffect(() => {
-        const storedFilters = localStorage.getItem(localStorageNS);
-        console.log(storedFilters);
-        if (storedFilters)
-            setFilters(JSON.parse(storedFilters));
-    }, []);
-    const handleFormChange = (event: ChangeEvent<FormEvent>) => {
-        window.localStorage.setItem(localStorageNS, JSON.stringify(filters));
-    };
-
     return (
         <section className="content">
             <SearchForm
-                value={filters}
-                onChange={handleFormChange}
+                forwardRef={formRef}
                 onApply={handleSearch}
                 onReset={handleResetFilters}
                 availableCountries={availableCountries}

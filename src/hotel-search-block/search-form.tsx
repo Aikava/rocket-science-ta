@@ -1,4 +1,14 @@
-import React, {ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useState} from "react";
+import React, {
+    ChangeEvent,
+    FormEvent,
+    forwardRef,
+    Fragment,
+    Ref,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState
+} from "react";
 import {Filters} from "../types";
 
 import "./style.css";
@@ -38,11 +48,11 @@ const CountryInputField = ({availableCountries, value}) => {
                 countryList.map((country: string) => {
                     const isChecked = value.includes(country);
 
-                    return (<>
+                    return (<Fragment key={country}>
                         <label>{country}</label>
                         <input data-field-name="country" data-value={country} checked={isChecked} type="checkbox"
                                id={`${country}`}/>
-                    </>);
+                    </Fragment>);
                 })
             }
         </>
@@ -52,7 +62,7 @@ const CountryInputField = ({availableCountries, value}) => {
 type HotelTypeProps = {
     value?: Filters["type"];
 }
-const HotelType = ({value = []}: HotelTypeProps) => {
+const HotelTypeField = ({value = []}: HotelTypeProps) => {
     return (
         <section>
             <b>Тип</b>
@@ -83,7 +93,7 @@ const createStarCountList = (checkedStars = []) => Array(5)
         }
         const starNumber = i + 1;
 
-        return (<>
+        return (<Fragment key={`star-${i}`}>
             <label htmlFor={`star-${i}`}>{starNumber} {title}</label>
             <input
                 data-field-name="starCount"
@@ -91,7 +101,7 @@ const createStarCountList = (checkedStars = []) => Array(5)
                 data-value-type="number"
                 checked={checkedStars.includes(starNumber)} name={`star-${starNumber}`} type="checkbox"
                 id={`star-${i}`}/>
-        </>)
+        </Fragment>)
     })
 type StarCountFieldProps = {
     value: Filters["starCount"];
@@ -169,7 +179,7 @@ type SearchFormProps = {
     onReset?: () => void;
     value?: Partial<Filters>;
     availableCountries?: Array<string>;
-    onChange: (filters: Partial<Filters>) => void;
+    forwardRef: Ref<HTMLFormElement>;
 }
 const initialFilters: Filters = {
     type: [],
@@ -179,7 +189,7 @@ const initialFilters: Filters = {
     starCount: [],
     reviewCount: -1
 }
-export const SearchForm = ({value, onChange, onApply, onReset, availableCountries = []}: SearchFormProps) => {
+export const SearchForm = ({forwardRef, onApply, onReset, availableCountries = []}: SearchFormProps) => {
     const [filters, setFilters] = useState<Filters>(initialFilters);
     const handleSubmit = (event: SubmitEvent) => {
         event.preventDefault();
@@ -225,11 +235,9 @@ export const SearchForm = ({value, onChange, onApply, onReset, availableCountrie
             });
         }
     };
-    useEffect(() => {
-        console.log(filters);
-    }, [filters]);
 
     return (<form
+        ref={forwardRef}
         method="get"
         action=""
         onSubmit={handleSubmit}
@@ -240,8 +248,7 @@ export const SearchForm = ({value, onChange, onApply, onReset, availableCountrie
         <CountryInputField
             value={filters.country}
             availableCountries={availableCountries}/>
-        {/*<CountryInput value={filters.country} availableCountries={availableCountries}/>*/}
-        <HotelType
+        <HotelTypeField
             value={filters.type}/>
         <StarCountField value={filters.starCount}/>
         <ReviewCountField value={filters.reviewCount}/>

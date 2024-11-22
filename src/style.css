@@ -16,6 +16,7 @@
     max-width: calc(var(--search-bar-width)  + var(--component-gap) + var(--list-width));
 }
 
+.empty-list,
 .list {
     margin-left: var(--component-gap);
 }
