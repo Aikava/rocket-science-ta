@@ -4,7 +4,7 @@
   "description": "Test assignment for Rocket Science",
   "main": "src/index.html",
   "scripts": {
-    "build": "vite build src --outDir ../public --emptyOurDir",
+    "build": "vite build src --outDir ../public --emptyOutDir --base './' ",
     "serve": "vite src"
   },
   "author": "Aikava Kizuna <aikava.kizuna@gmail.com>",
