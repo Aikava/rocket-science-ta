@@ -1,0 +1,18 @@
+{
+  "name": "rocket-science-ta",
+  "version": "1.0.0",
+  "description": "Test assignment for Rocket Science",
+  "main": "src/index.html",
+  "scripts": {
+    "build": "vite build src --outDir ../public --emptyOurDir",
+    "serve": "vite src"
+  },
+  "author": "Aikava Kizuna <aikava.kizuna@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "vite": "^5.4.11"
+  }
+}

@@ -1,0 +1,47 @@
+:root {
+    --search-bar-width: 325px;
+    --list-width: 845px;
+    --component-gap: 40px;
+}
+.search-form {
+    display: flex;
+    flex-direction: column;
+    float: left;
+    width: 325px;
+}
+
+.content {
+    display: flex;
+    margin: 0 auto;
+    max-width: calc(var(--search-bar-width)  + var(--component-gap) + var(--list-width));
+}
+
+.list {
+    margin-left: var(--component-gap);
+}
+
+.hotel-card {
+    box-sizing: border-box;
+    padding: 22px 25px 28px;
+    width: var(--list-width);
+    display: flex;
+    flex-direction: row;
+}
+.hotel-card__booking-block {
+    margin-left: var(--component-gap);
+}
+
+.hotel-card__title {
+
+}
+
+.hotel-card__subtitle {
+
+}
+
+.hotel-card__description {
+    font-size: 16px;
+}
+.booking-button {
+    width: 179px;
+}

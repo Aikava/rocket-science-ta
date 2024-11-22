@@ -1,0 +1,19 @@
+.star-count,
+.hotel-type {
+    display: flex;
+    flex-direction: column;
+}
+
+.price-from-to {
+    display: flex;
+    flex-direction: row;
+}
+.price-from-to__from,
+.price-from-to__to {
+    display: block;
+}
+
+.star-count__counts {
+    display: flex;
+    flex-direction: column;
+}
