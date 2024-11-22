@@ -6,8 +6,8 @@
 .search-form {
     display: flex;
     flex-direction: column;
-    float: left;
-    width: 325px;
+    width: var(--search-bar-width);
+    gap: 26px;
 }
 
 .content {
@@ -30,14 +30,6 @@
 }
 .hotel-card__booking-block {
     margin-left: var(--component-gap);
-}
-
-.hotel-card__title {
-
-}
-
-.hotel-card__subtitle {
-
 }
 
 .hotel-card__description {

@@ -2,6 +2,7 @@ import React, {ChangeEvent, FormEvent, useCallback, useEffect, useRef, useState}
 import "./style.css";
 import {Filters, Hotel} from "./types";
 import {SearchForm} from "./hotel-search-block";
+import {Pagination} from "antd";
 
 const HotelItem = (props: Hotel) => {
     const {
@@ -35,8 +36,14 @@ type HotelProps = {
     hotels: Array<Hotel>;
 }
 const HotelList = ({hotels}: HotelProps) => {
+    const [page, setPage] = useState(0);
+    const maxSize = 3;
+    const handlePageChange = (page: number) => {
+        setPage(page);
+    }
     return (<section className="list">
-        {hotels.map((hotel: Hotel) => <HotelItem key={hotel.name.replace(" ", "-")} {...hotel} />)}
+        {hotels.slice(page, page + maxSize).map((hotel: Hotel) => <HotelItem key={hotel.name.replace(" ", "-")} {...hotel} />)}
+        <Pagination onChange={handlePageChange} current={page} total={hotels.length} pageSize={maxSize}/>
     </section>);
 };
 
@@ -76,16 +83,11 @@ const applyFiltersToList = (filters: Partial<Filters>, list: Array<Hotel>) => {
         if (filters.priceTo)
             isValid &&= filters.priceTo >= hotel.min_price;
 
+        if (filters.country.length > 0)
+            isValid &&= filters.country.includes(hotel.country);
+
         return isValid;
     })
-}
-const initialFilters: Filters = {
-    type: [],
-    country: [],
-    priceFrom: 0,
-    priceTo: 100500,
-    starCount: [],
-    reviewCount: -1
 }
 
 export const Application = () => {
@@ -112,7 +114,6 @@ export const Application = () => {
             setAvailableCountries([...countries.values()])
         });
     }, []);
-
     return (
         <section className="content">
             <SearchForm

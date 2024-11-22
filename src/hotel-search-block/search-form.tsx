@@ -1,17 +1,16 @@
 import React, {
     ChangeEvent,
-    FormEvent,
-    forwardRef,
     Fragment,
     Ref,
-    useCallback,
     useEffect,
-    useMemo,
+    useMemo, useRef,
     useState
 } from "react";
 import {Filters} from "../types";
 
 import "./style.css";
+import {Button, Checkbox, Flex, Input, Slider} from "antd";
+import {CloseOutlined, SearchOutlined} from "@ant-design/icons";
 
 const CountryInputField = ({availableCountries, value}) => {
     const [search, setSearch] = useState("");
@@ -31,31 +30,42 @@ const CountryInputField = ({availableCountries, value}) => {
     useEffect(() => {
         setCountryList(availableCountries);
     }, [availableCountries]);
+    const handleClearSearch = () => {
+        setSearch("");
+    }
 
     return (
-        <>
+        <section>
             <label htmlFor="country">
                 <b>Страна</b>
             </label>
-            <input type="text"
-                   name="country" value={search}
-                   onChange={handleSearchChange}
+            <Input
+                prefix={<SearchOutlined/>}
+                suffix={<CloseOutlined onClick={handleClearSearch}/>}
+                type="text"
+                name="country"
+                value={search}
+                onChange={handleSearchChange}
             />
-            {countryList.length === 0 && <p>
-                К сожалению, по вашему запросу ничего не найдено :(
-            </p>}
-            {
-                countryList.map((country: string) => {
-                    const isChecked = value.includes(country);
+            <fieldset className="country-list">
+                {countryList.length === 0 && <p>
+                    К сожалению, по вашему запросу ничего не найдено :(
+                </p>}
+                {
+                    countryList.map((country: string) => {
+                        const isChecked = value.includes(country);
 
-                    return (<Fragment key={country}>
-                        <label>{country}</label>
-                        <input data-field-name="country" data-value={country} checked={isChecked} type="checkbox"
-                               id={`${country}`}/>
-                    </Fragment>);
-                })
-            }
-        </>
+                        return (<Checkbox
+                            data-field-name="country"
+                            data-value={country}
+                            checked={isChecked}
+                            type="checkbox">
+                            {country}
+                        </Checkbox>);
+                    })
+                }
+            </fieldset>
+        </section>
     );
 };
 
@@ -67,16 +77,22 @@ const HotelTypeField = ({value = []}: HotelTypeProps) => {
         <section>
             <b>Тип</b>
             <fieldset className="hotel-type">
-                <label htmlFor="apartment">
+                <Checkbox
+                    data-field-name="type"
+                    data-value="Апартаменты"
+                    checked={value.includes("Апартаменты")}
+                    type="checkbox"
+                    name="Апартаменты"
+                >
                     Апартаменты
-                </label>
-                <input data-field-name="type" data-value="Апартаменты" checked={value.includes("Апартаменты")}
-                       id="apartment" type="checkbox" name="Апартаменты"/>
-                <label htmlFor="hotel">
+                </Checkbox>
+                <Checkbox
+                    data-field-name="type"
+                    data-value="Отель"
+                    checked={value.includes("Отель")}
+                    type="checkbox">
                     Отель
-                </label>
-                <input data-field-name="type" data-value="Отель" checked={value.includes("Отель")} id="hotel"
-                       type="checkbox" name="Отель"/>
+                </Checkbox>
             </fieldset>
         </section>
     );
@@ -93,15 +109,17 @@ const createStarCountList = (checkedStars = []) => Array(5)
         }
         const starNumber = i + 1;
 
-        return (<Fragment key={`star-${i}`}>
-            <label htmlFor={`star-${i}`}>{starNumber} {title}</label>
-            <input
+        return (
+            <Checkbox
+                key={`star-${i}`}
                 data-field-name="starCount"
                 data-value={starNumber}
                 data-value-type="number"
-                checked={checkedStars.includes(starNumber)} name={`star-${starNumber}`} type="checkbox"
-                id={`star-${i}`}/>
-        </Fragment>)
+                checked={checkedStars.includes(starNumber)}
+                name={`star-${starNumber}`} type="checkbox"
+                id={`star-${i}`}>
+                {starNumber} {title}
+            </Checkbox>);
     })
 type StarCountFieldProps = {
     value: Filters["starCount"];
@@ -132,11 +150,14 @@ const ReviewCountField = ({value}: ReviewCountFieldProps) => {
             <label htmlFor="reviews">
                 <b>Количество отзывов (от)</b>
             </label>
-            <input
+            <Input
+                placeholder="Например от 10"
                 value={value < 0 ? "" : value}
                 data-field-name="reviewCount"
                 data-value-type="number"
-                id="reviews" name="reviews" type="number" inputMode="numeric"></input>
+                id="reviews"
+                name="reviews"
+                inputMode="numeric"></Input>
         </section>
     );
 }
@@ -144,33 +165,60 @@ const ReviewCountField = ({value}: ReviewCountFieldProps) => {
 type PriceFieldProps = {
     from: Filters["priceFrom"];
     to: Filters["priceTo"];
-    currency: "RUR"
+    currency: string,
+    onChange: (from: Filters["priceFrom"], to: Filters["priceTo"]) => void;
 }
-const PriceField = ({from = 0, to = 100500, currency}: PriceFieldProps) => {
+const PriceField = ({onChange, from = 0, to = 100500, currency}: PriceFieldProps) => {
+    const [fromValue, setFromValue] = useState();
+    const [toValue, setToValue] = useState();
 
+    const handleSliderChange = ([min, max]) => {
+        setFromValue(min);
+        setToValue(max);
+        onChange(min, max);
+    };
+    const handleFromPriceChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setFromValue(event.target.value);
+    }
+    const handleToPriceChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setToValue(event.target.value);
+    }
+
+    useEffect(() => {
+        setFromValue(from);
+        setToValue(to);
+    }, [from, to]);
     return (<section>
-        <article className="price-from-to">
-            <b>Цена</b>
-            <p className="price-from-to__from">
-                <input
-                    data-field-name="priceFrom"
-                    data-value-type="number"
-                    id="price-from" value={from}/>
-            </p>
-            <p className="price-from-to__to">
-                <input
-                    data-field-name="priceTo"
-                    data-value-type="number"
-                    id="price-to" value={to}/>
-            </p>
-        </article>
-        <input
-            data-field-name="priceFrom"
-            data-value-type="number"
-            max={100500 - 1} name="min-price" type="range" value={from}/>
-        <input
-            data-field-name="priceTo"
-            max={100500} name="max-price" type="range" value={to}/>
+        <b>Цена</b>
+        <fieldset>
+            <article className="price-from-to">
+                <p className="price-from-to__from">
+                    <Input
+                        onChange={handleFromPriceChange}
+                        prefix="От"
+                        suffix={currency}
+                        data-field-name="priceFrom"
+                        data-value-type="number"
+                        value={fromValue}/>
+                </p>
+                <p>-</p>
+                <p className="price-from-to__to">
+                    <Input
+                        onChange={handleToPriceChange}
+                        prefix="До"
+                        suffix={currency}
+                        data-field-name="priceTo"
+                        data-value-type="number"
+                        value={toValue}/>
+                </p>
+            </article>
+
+            <Slider
+                range
+                onChange={handleSliderChange}
+                value={[from, to]}
+                max={100500 - 1}/>
+        </fieldset>
     </section>)
 };
 
@@ -235,6 +283,13 @@ export const SearchForm = ({forwardRef, onApply, onReset, availableCountries = [
             });
         }
     };
+    const handlePriceChange = (from, to) => {
+        setFilters(prev => ({
+            ...prev,
+            priceFrom: parseInt(from),
+            priceTo: parseInt(to)
+        }))
+    }
 
     return (<form
         ref={forwardRef}
@@ -252,10 +307,14 @@ export const SearchForm = ({forwardRef, onApply, onReset, availableCountries = [
             value={filters.type}/>
         <StarCountField value={filters.starCount}/>
         <ReviewCountField value={filters.reviewCount}/>
-        <PriceField currency={"RUR"}
-                    from={filters.priceFrom}
-                    to={filters.priceTo}/>
-        <button type="submit">Apply filters</button>
-        <button type="reset">Clear filters</button>
+        <PriceField
+            onChange={handlePriceChange}
+            currency={"₽"}
+            from={filters.priceFrom}
+            to={filters.priceTo}/>
+        <section className="button-block">
+            <Button type="primary" htmlType="submit">Apply filters</Button>
+            <Button htmlType="reset">Clear filters</Button>
+        </section>
     </form>);
 };

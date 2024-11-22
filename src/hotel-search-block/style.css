@@ -7,6 +7,8 @@
 .price-from-to {
     display: flex;
     flex-direction: row;
+    width: 100%;
+    box-sizing: border-box;
 }
 .price-from-to__from,
 .price-from-to__to {
@@ -14,6 +16,17 @@
 }
 
 .star-count__counts {
+    display: flex;
+    flex-direction: column;
+}
+.country-list {
+    max-height: 200px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+}
+
+.button-block {
     display: flex;
     flex-direction: column;
 }
